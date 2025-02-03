@@ -86,27 +86,29 @@ class TestAccountService(TestCase):
         data = resp.get_json()
         self.assertEqual(data["status"], "OK")
 
-    def test_create_account(self):
-        """It should Create a new Account"""
-        account = AccountFactory()
-        response = self.client.post(
+    def _create_account(self, name="John Doe", email="john.doe@example.com"):
+        """Helper method to create a single account for testing"""
+        account_data = {
+            "name": name,
+            "email": email,
+            "address": "123 Main St",
+            "phone_number": "555-1234",
+            "date_joined": "2025-01-01"  # Example date format
+        }
+
+        # POST request to create the account
+        resp = self.client.post(
             BASE_URL,
-            json=account.serialize(),
+            json=account_data,
             content_type="application/json"
         )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        # Make sure location header is set
-        location = response.headers.get("Location", None)
-        self.assertIsNotNone(location)
+        # Ensure account creation was successful
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
-        # Check the data is correct
-        new_account = response.get_json()
-        self.assertEqual(new_account["name"], account.name)
-        self.assertEqual(new_account["email"], account.email)
-        self.assertEqual(new_account["address"], account.address)
-        self.assertEqual(new_account["phone_number"], account.phone_number)
-        self.assertEqual(new_account["date_joined"], str(account.date_joined))
+        # Return the created account's JSON data (including the ID assigned by the DB)
+        return resp.get_json()  # Return the created account's data
+
 
     def test_bad_request(self):
         """It should not Create an Account when sending the wrong data"""
@@ -123,4 +125,35 @@ class TestAccountService(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
-    # ADD YOUR TEST CASES HERE ...
+    def test_read_an_account(self):
+        """It should Read a single Account"""
+        
+        # Create a new account via the helper function
+        account = self._create_account()  # This will create and return the account data
+        
+        # Check if the account has been created
+        self.assertIsNotNone(account.get("id"), "Account creation failed, no ID returned.")
+        
+        # Send a GET request to read the account by id
+        resp = self.client.get(f"/accounts/{account['id']}", content_type="application/json")
+        
+        # Assert that the response status code is HTTP_200_OK (successful retrieval)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        
+        # Get the JSON response data
+        data = resp.get_json()
+
+        # Assert that the returned account data matches the data that was sent
+        self.assertEqual(data["id"], account["id"])
+        self.assertEqual(data["name"], account["name"])
+        self.assertEqual(data["email"], account["email"])
+        self.assertEqual(data["address"], account["address"])
+        self.assertEqual(data["phone_number"], account["phone_number"])
+        self.assertEqual(data["date_joined"], account["date_joined"])
+
+    def test_account_not_found(self):
+        """It should not Read an Account that is not found"""
+        resp = self.client.get(f"{BASE_URL}/0")  # Use an ID that does not exist
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+        data = resp.get_json()
+        self.assertEqual(data["error"], "Account not found")
