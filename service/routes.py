@@ -9,7 +9,6 @@ from service.models import Account
 from service.common import status  # HTTP Status Codes
 from . import app  # Import Flask application
 
-
 ############################################################
 # Health Endpoint
 ############################################################
@@ -67,10 +66,15 @@ def create_accounts():
 ######################################################################
 # READ AN ACCOUNT
 ######################################################################
-
-# ... place you code here to READ an account ...
-
-
+@app.route('/accounts/<int:id>', methods=['GET'])
+def get_account(id):
+    """Fetch an account by ID"""
+    account = Account.query.get(id)
+    if account:
+        return jsonify(account.serialize()), 200
+    else:
+        # Change error message to match test expectation
+        return jsonify({"error": "Account not found"}), 404
 ######################################################################
 # UPDATE AN EXISTING ACCOUNT
 ######################################################################
