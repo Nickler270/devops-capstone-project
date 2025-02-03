@@ -157,3 +157,38 @@ class TestAccountService(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
         data = resp.get_json()
         self.assertEqual(data["error"], "Account not found")
+
+    def test_update_account(self):
+        """It should Update an Account"""
+        
+        # First, create an account
+        account = self._create_account()  # You may need to create this helper method if it doesn't exist
+        
+        # Define the updated data
+        updated_data = {
+            "name": "John Updated",
+            "email": "john.updated@example.com",
+            "address": "456 Updated St",
+            "phone_number": "555-5678",
+            "date_joined": "2025-02-01"
+        }
+        
+        # Send a PUT request to update the account
+        resp = self.client.put(
+            f"/accounts/{account['id']}", 
+            json=updated_data,
+            content_type="application/json"
+        )
+        
+        # Assert that the response status code is HTTP_200_OK
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        
+        # Get the JSON response data
+        data = resp.get_json()
+
+        # Assert that the returned account data matches the updated data
+        self.assertEqual(data["name"], updated_data["name"])
+        self.assertEqual(data["email"], updated_data["email"])
+        self.assertEqual(data["address"], updated_data["address"])
+        self.assertEqual(data["phone_number"], updated_data["phone_number"])
+        self.assertEqual(data["date_joined"], updated_data["date_joined"])
