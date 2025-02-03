@@ -192,3 +192,25 @@ class TestAccountService(TestCase):
         self.assertEqual(data["address"], updated_data["address"])
         self.assertEqual(data["phone_number"], updated_data["phone_number"])
         self.assertEqual(data["date_joined"], updated_data["date_joined"])
+
+    def test_delete_account(self):
+        """It should Delete an Account"""
+        
+        # First, create an account
+        account = self._create_account()  # You may need to create this helper method if it doesn't exist
+        
+        # Send a DELETE request to remove the account
+        resp = self.client.delete(f"/accounts/{account['id']}")
+        
+        # Assert that the response status code is HTTP_200_OK
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        
+        # Get the JSON response data
+        data = resp.get_json()
+
+        # Assert that the message returned confirms deletion
+        self.assertEqual(data["message"], "Account deleted successfully")
+        
+        # Verify that the account was actually deleted by trying to fetch it
+        resp = self.client.get(f"/accounts/{account['id']}")
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)  # Account should not be found
