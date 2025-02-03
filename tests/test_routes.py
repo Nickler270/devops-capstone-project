@@ -214,3 +214,21 @@ class TestAccountService(TestCase):
         # Verify that the account was actually deleted by trying to fetch it
         resp = self.client.get(f"/accounts/{account['id']}")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)  # Account should not be found
+
+    def test_list_accounts(self):
+        """It should List all Accounts"""
+        
+        # Create multiple accounts for the test
+        accounts = self._create_accounts(3)
+        
+        # Send a GET request to list all accounts
+        resp = self.client.get("/accounts", content_type="application/json")
+        
+        # Assert that the response status code is HTTP_200_OK (successful retrieval)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        
+        # Get the JSON response data
+        data = resp.get_json()
+
+        # Assert that the number of accounts returned matches the created ones
+        self.assertEqual(len(data), 3)  # We created 3 accounts
