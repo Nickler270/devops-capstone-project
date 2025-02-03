@@ -3,6 +3,7 @@ Account Service
 
 This microservice handles the lifecycle of Accounts
 """
+
 # pylint: disable=unused-import
 from flask import jsonify, request, make_response, abort, url_for   # noqa; F401
 from service.models import Account
@@ -41,7 +42,7 @@ def index():
 def create_accounts():
     """
     Creates an Account
-    This endpoint will create an Account based the data in the body that is posted
+    This endpoint will create an Account based on the data in the body that is posted
     """
     app.logger.info("Request to create an Account")
     check_content_type("application/json")
@@ -59,8 +60,13 @@ def create_accounts():
 ######################################################################
 # LIST ALL ACCOUNTS
 ######################################################################
-
-# ... place you code here to LIST accounts ...
+@app.route("/accounts", methods=["GET"])
+def list_accounts():
+    """List all Accounts"""
+    accounts = Account.query.all()  # Get all accounts from the DB
+    if not accounts:
+        return jsonify({"message": "No accounts found"}), status.HTTP_404_NOT_FOUND
+    return jsonify([account.serialize() for account in accounts]), status.HTTP_200_OK
 
 
 ######################################################################
@@ -75,6 +81,8 @@ def get_account(id):
     else:
         # Change error message to match test expectation
         return jsonify({"error": "Account not found"}), 404
+
+
 ######################################################################
 # UPDATE AN EXISTING ACCOUNT
 ######################################################################
@@ -95,6 +103,8 @@ def update_account(id):
     
     account.update()  # Save changes to the database
     return jsonify(account.serialize()), status.HTTP_200_OK
+
+
 ######################################################################
 # DELETE AN ACCOUNT
 ######################################################################
@@ -107,16 +117,8 @@ def delete_account(id):
     
     account.delete()  # Delete the account from the DB
     return jsonify({"message": "Account deleted successfully"}), status.HTTP_200_OK
-######################################################################
-# LIST ACCOUNTS
-######################################################################
-@app.route("/accounts", methods=["GET"])
-def list_accounts():
-    """List all Accounts"""
-    accounts = Account.query.all()  # Get all accounts from the DB
-    if not accounts:
-        return jsonify({"message": "No accounts found"}), status.HTTP_404_NOT_FOUND
-    return jsonify([account.serialize() for account in accounts]), status.HTTP_200_OK
+
+
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
