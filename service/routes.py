@@ -10,6 +10,7 @@ from service.models import Account
 from service.common import status  # HTTP Status Codes
 from . import app  # Import Flask application
 
+
 ############################################################
 # Health Endpoint
 ############################################################
@@ -93,7 +94,7 @@ def update_account(id):
     account = Account.query.get(id)
     if not account:
         return jsonify({"error": "Account not found"}), status.HTTP_404_NOT_FOUND
-    
+
     # Deserialize the incoming request data
     data = request.get_json()
     account.name = data.get("name", account.name)
@@ -101,7 +102,7 @@ def update_account(id):
     account.address = data.get("address", account.address)
     account.phone_number = data.get("phone_number", account.phone_number)
     account.date_joined = data.get("date_joined", account.date_joined)
-    
+
     account.update()  # Save changes to the database
     return jsonify(account.serialize()), status.HTTP_200_OK
 
@@ -115,7 +116,7 @@ def delete_account(id):
     account = Account.query.get(id)
     if not account:
         return jsonify({"error": "Account not found"}), status.HTTP_404_NOT_FOUND
-    
+
     account.delete()  # Delete the account from the DB
     return jsonify({"message": "Account deleted successfully"}), status.HTTP_200_OK
 
