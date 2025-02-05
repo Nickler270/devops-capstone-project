@@ -101,8 +101,10 @@ def update_account(id):
     """Update an Account"""
     account = Account.query.get(id)
     if not account:
-        return jsonify({"error": "Account not found"}),
-        status.HTTP_404_NOT_FOUND
+        return (
+            jsonify({"error": "Account not found"}),
+            status.HTTP_404_NOT_FOUND
+        )
 
     # Deserialize the incoming request data
     data = request.get_json()
@@ -113,25 +115,28 @@ def update_account(id):
     account.date_joined = data.get("date_joined", account.date_joined)
 
     account.update()  # Save changes to the database
-    return jsonify(account.serialize()), status.HTTP_200_OK
+    return (
+        jsonify(account.serialize()),
+        status.HTTP_200_OK
+    )
 
 
 ######################################################################
 # DELETE AN ACCOUNT
 ######################################################################
-@app.route('/accounts/<int:id>', methods=['DELETE'])
-def delete_account(id):
-    """Delete an Account"""
-    account = Account.query.get(id)
+@app.route('/accounts/<int:account_id>', methods=['DELETE'])
+def delete_account(account_id):
+    account = Account.query.get(account_id)
     if not account:
-        return jsonify({"error": "Account not found"}), (
-            status.HTTP_404_NOT_FOUND
-        )
+        return jsonify({"message": "Account not found"}), 404
 
-    account.delete()  # Delete the account from the DB
-    return jsonify({"message": "Account deleted successfully"}), (
-        status.HTTP_200_OK
-    )
+    try:
+        db.session.delete(account)
+        db.session.commit()
+        return jsonify({"message": "Account deleted"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": f"Error deleting account: {str(e)}"}), 500
 
 
 ######################################################################
