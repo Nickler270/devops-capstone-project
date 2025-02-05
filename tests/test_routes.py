@@ -164,7 +164,7 @@ class TestAccountService(TestCase):
         self.assertEqual(data['email'], updated_data['email'])
         self.assertEqual(data['address'], updated_data['address'])
         self.assertEqual(data['phone_number'], updated_data['phone_number'])
-        self.assertEqual(data['date_joined'], updated_data['date_joined'])  
+        self.assertEqual(data['date_joined'], updated_data['date_joined'])
 
     def test_delete_account(self):
         """It should Delete an Accountttttttttttttttttttttttt"""
