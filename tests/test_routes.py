@@ -154,21 +154,28 @@ class TestAccountService(TestCase):
         self.assertEqual(data["name"], updated_data["name"])
 
     def test_delete_account(self):
-        """It should Delete an Account"""
-        # Create an account for testing
+        """It should delete an Account and return a success message"""
+
+        # Step 1: Create an account for testing
         account = self._create_account()
 
-        # Attempt to delete the account
+        # Step 2: Send DELETE request to delete the account
         resp = self.client.delete(f"/accounts/{account['id']}")
-        
-        # Check if the account was deleted successfully
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        data = resp.get_json()
-        self.assertEqual(data["message"], "Account deleted")
 
-        # Attempt to get the deleted account (should return a 404 error)
+        # Step 3: Verify the DELETE request was successful
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+        # Step 4: Verify the response message confirms account deletion
+        data = resp.get_json()
+        self.assertEqual(data["message"], "Account deleted successfully")
+
+        # Step 5: Attempt to retrieve the deleted account
         resp = self.client.get(f"/accounts/{account['id']}")
+
+        # Step 6: Verify the account is no longer found (should return 404)
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+        data = resp.get_json()
+        self.assertEqual(data["error"], "Account not found")
 
     def test_list_accounts(self):
         """It should List all Accounts"""

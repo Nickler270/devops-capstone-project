@@ -8,7 +8,8 @@ This microservice handles the lifecycle of Accounts
 from flask import jsonify, request, make_response, abort, url_for   # noqa; F401
 from service.models import Account
 from service.common import status  # HTTP Status Codes
-from . import app  # Import Flask application
+from . import app  # Import Flask application0
+from . import db
 
 
 ############################################################
@@ -124,19 +125,17 @@ def update_account(id):
 ######################################################################
 # DELETE AN ACCOUNT
 ######################################################################
-@app.route('/accounts/<int:account_id>', methods=['DELETE'])
-def delete_account(account_id):
-    account = Account.query.get(account_id)
+@app.route('/accounts/<int:id>', methods=['DELETE'])
+def delete_account(id):
+    """Delete an Account"""
+    account = Account.query.get(id)
     if not account:
-        return jsonify({"message": "Account not found"}), 404
+        return jsonify({"error": "Account not found"}), status.HTTP_404_NOT_FOUND
 
-    try:
-        db.session.delete(account)
-        db.session.commit()
-        return jsonify({"message": "Account deleted"}), 200
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"message": f"Error deleting account: {str(e)}"}), 500
+    db.session.delete(account)
+    db.session.commit()        
+
+    return jsonify({"message": "Account deleted successfully"}), status.HTTP_200_OK
 
 
 ######################################################################
