@@ -1,28 +1,18 @@
-"""
-Account Service
+# Account Service
 
-This microservice handles the lifecycle of Accounts
-"""
-
-# pylint: disable=unused-import
-from flask import jsonify, request, make_response, abort, url_for   # noqa; F401
+from flask import jsonify, request, make_response, abort, url_for
 from service.models import Account
 from service.common import status  # HTTP Status Codes
-from . import app  # Import Flask application
+from . import app
+from . import db
 
 
-############################################################
-# Health Endpoint
-############################################################
 @app.route("/health")
 def health():
     """Health Status"""
     return jsonify(dict(status="OK")), status.HTTP_200_OK
 
 
-######################################################################
-# GET INDEX
-######################################################################
 @app.route("/")
 def index():
     """Root URL response"""
@@ -30,15 +20,11 @@ def index():
         jsonify(
             name="Account REST API Service",
             version="1.0",
-            # paths=url_for("list_accounts", _external=True),
         ),
         status.HTTP_200_OK,
     )
 
 
-######################################################################
-# CREATE A NEW ACCOUNT
-######################################################################
 @app.route("/accounts", methods=["POST"])
 def create_accounts():
     """
@@ -52,50 +38,39 @@ def create_accounts():
     account.deserialize(request.get_json())
     account.create()
     message = account.serialize()
-    # Uncomment once get_accounts has been implemented
-    # location_url =
-    # url_for("get_accounts", account_id=account.id, _external=True)
-    location_url = "/"  # Remove once get_accounts has been implemented
+    location_url = "/"  # Placeholder for future implementation
     return make_response(
         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
     )
 
 
-######################################################################
-# LIST ALL ACCOUNTS
-######################################################################
 @app.route("/accounts", methods=["GET"])
 def list_accounts():
     """List all accounts"""
     accounts = Account.all()
     account_list = [account.serialize() for account in accounts]
-    return jsonify(account_list), 200
+    return jsonify(account_list), status.HTTP_200_OK
 
 
-######################################################################
-# READ AN ACCOUNT
-######################################################################
 @app.route('/accounts/<int:id>', methods=['GET'])
 def get_account(id):
     """Fetch an account by ID"""
     account = Account.query.get(id)
     if account:
-        return jsonify(account.serialize()), 200
+        return jsonify(account.serialize()), status.HTTP_200_OK
     else:
-        # Change error message to match test expectation
-        return jsonify({"error": "Account not found"}), 404
+        return jsonify({"error": "Account not found"}), status.HTTP_404_NOT_FOUND
 
 
-######################################################################
-# UPDATE AN EXISTING ACCOUNT
-######################################################################
 @app.route('/accounts/<int:id>', methods=['PUT'])
 def update_account(id):
     """Update an Account"""
     account = Account.query.get(id)
     if not account:
-        return jsonify({"error": "Account not found"}),
-        status.HTTP_404_NOT_FOUND
+        return (
+            jsonify({"error": "Account not found"}),
+            status.HTTP_404_NOT_FOUND
+        )
 
     # Deserialize the incoming request data
     data = request.get_json()
@@ -106,26 +81,22 @@ def update_account(id):
     account.date_joined = data.get("date_joined", account.date_joined)
 
     account.update()  # Save changes to the database
-    return jsonify(account.serialize()), status.HTTP_200_OK
+    return (
+        jsonify(account.serialize()),
+        status.HTTP_200_OK
+    )
 
 
-######################################################################
-# DELETE AN ACCOUNT
-######################################################################
 @app.route("/accounts/<int:account_id>", methods=["DELETE"])
 def delete_account(account_id):
     """Delete an account by ID"""
     account = Account.find(account_id)
     if not account:
-        return jsonify({"error": "Account not found"}), 404
+        return jsonify({"error": "Account not found"}), status.HTTP_404_NOT_FOUND
 
     account.delete()
-    return jsonify({"message": "Account deleted successfully"}), 200
+    return jsonify({"message": "Account deleted successfully"}), status.HTTP_200_OK
 
-
-######################################################################
-#  U T I L I T Y   F U N C T I O N S
-######################################################################
 
 def check_content_type(media_type):
     """Checks that the media type is correct"""
