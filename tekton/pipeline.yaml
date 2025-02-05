@@ -17,7 +17,7 @@ spec:
       type: string
     - name: branch
       type: string
-      default: cd-pipeline3
+      default: main
     - name: build-image  # Added missing parameter
       type: string
 
