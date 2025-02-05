@@ -20,7 +20,6 @@ spec:
       default: main
     - name: build-image  # Added missing parameter
       type: string
-
   tasks:
     - name: init
       workspaces:

@@ -155,7 +155,7 @@ class TestAccountService(TestCase):
 
         # Ensure the response status is OK
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        
+
         data = resp.get_json()
         print(data)  # Debugging step: Check the returned data
 
