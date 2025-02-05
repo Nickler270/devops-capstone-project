@@ -9,6 +9,7 @@ from flask import jsonify, request, make_response, abort, url_for   # noqa; F401
 from service.models import Account
 from service.common import status  # HTTP Status Codes
 from . import app  # Import Flask application
+from datetime import datetime
 
 
 ############################################################
@@ -94,11 +95,19 @@ def update_account(id):
     """Update an Account"""
     account = Account.query.get(id)
     if not account:
-        return jsonify({"error": "Account not found"}),
-        status.HTTP_404_NOT_FOUND
+        return jsonify({"error": "Account not found"}), status.HTTP_404_NOT_FOUND
 
     # Deserialize the incoming request data
     data = request.get_json()
+
+    # Ensure that date_joined is a datetime.date object, not a string
+    if 'date_joined' in data:
+        try:
+            data['date_joined'] = datetime.strptime(data['date_joined'], '%Y-%m-%d').date()  # Convert to date
+        except ValueError:
+            return jsonify({"error": "Invalid date format. Expected YYYY-MM-DD."}), status.HTTP_400_BAD_REQUEST
+
+    # Update the account fields with the data
     account.name = data.get("name", account.name)
     account.email = data.get("email", account.email)
     account.address = data.get("address", account.address)

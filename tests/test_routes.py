@@ -136,7 +136,8 @@ class TestAccountService(TestCase):
 
     def test_update_account(self):
         """It should Update an Account"""
-        account = self._create_account()  # Creates a new account
+        account = self._create_account()
+
         updated_data = {
             "name": "John Updated",
             "email": "john.updated@example.com",
@@ -153,18 +154,17 @@ class TestAccountService(TestCase):
 
         print(resp.data)  # Debugging step: Inspect the response data
 
-        # Ensure the response status is OK
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        
+
         data = resp.get_json()
         print(data)  # Debugging step: Check the returned data
 
-        # Ensure the updated data matches the response
-        self.assertEqual(data["name"], updated_data["name"])
-        self.assertEqual(data["email"], updated_data["email"])
-        self.assertEqual(data["address"], updated_data["address"])
-        self.assertEqual(data["phone_number"], updated_data["phone_number"])
-        self.assertEqual(data["date_joined"], updated_data["date_joined"])
+        # Ensure the updated fields are reflected in the response
+        self.assertEqual(data['name'], updated_data['name'])
+        self.assertEqual(data['email'], updated_data['email'])
+        self.assertEqual(data['address'], updated_data['address'])
+        self.assertEqual(data['phone_number'], updated_data['phone_number'])
+        self.assertEqual(data['date_joined'], updated_data['date_joined'])
 
     def test_delete_account(self):
         """It should Delete an Accountttttttttttttttttttttttt"""
@@ -177,7 +177,6 @@ class TestAccountService(TestCase):
 
         resp = self.client.get(f"/accounts/{account['id']}")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
-
 
     def test_list_accounts(self):
         """It should List all Accounts"""
