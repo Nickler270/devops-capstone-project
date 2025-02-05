@@ -136,46 +136,59 @@ class TestAccountService(TestCase):
 
     def test_update_account(self):
         """It should Update an Account"""
-        account = self._create_account()
+        account = self._create_account()  # Creates a new account
         updated_data = {
             "name": "John Updated",
             "email": "john.updated@example.com",
             "address": "456 Updated St",
             "phone_number": "555-5678",
-            "date_joined": "2025-02-01"
+            "date_joined": "2025-02-01"  # Correct format for the date
         }
+
         resp = self.client.put(
             f"/accounts/{account['id']}",
             json=updated_data,
             content_type="application/json"
         )
+
+        print(resp.data)  # Debugging step: Inspect the response data
+
+        # Ensure the response status is OK
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        
         data = resp.get_json()
+        print(data)  # Debugging step: Check the returned data
+
+        # Ensure the updated data matches the response
         self.assertEqual(data["name"], updated_data["name"])
+        self.assertEqual(data["email"], updated_data["email"])
+        self.assertEqual(data["address"], updated_data["address"])
+        self.assertEqual(data["phone_number"], updated_data["phone_number"])
+        self.assertEqual(data["date_joined"], updated_data["date_joined"])
 
-    def test_delete_account(self):
-        """It should delete an Account and return a success message"""
+def test_delete_account(self):
+    """It should delete an Account and return a success message"""
 
-        # Step 1: Create an account for testing
-        account = self._create_account()
+    # Step 1: Create an account for testing
+    account = self._create_account()
 
-        # Step 2: Send DELETE request to delete the account
-        resp = self.client.delete(f"/accounts/{account['id']}")
+    # Step 2: Send DELETE request to delete the account
+    resp = self.client.delete(f"/accounts/{account['id']}")
 
-        # Step 3: Verify the DELETE request was successful
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+    # Step 3: Verify the DELETE request was successful
+    self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
-        # Step 4: Verify the response message confirms account deletion
-        data = resp.get_json()
-        self.assertEqual(data["message"], "Account deleted successfully")
+    # Step 4: Verify the response message confirms account deletion
+    data = resp.get_json()
+    self.assertEqual(data["message"], "Account deleted successfully")
 
-        # Step 5: Attempt to retrieve the deleted account
-        resp = self.client.get(f"/accounts/{account['id']}")
+    # Step 5: Attempt to retrieve the deleted account
+    resp = self.client.get(f"/accounts/{account['id']}")
 
-        # Step 6: Verify the account is no longer found (should return 404)
-        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
-        data = resp.get_json()
-        self.assertEqual(data["error"], "Account not found")
+    # Step 6: Verify the account is no longer found (should return 404)
+    self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+    data = resp.get_json()
+    self.assertEqual(data["error"], "Account not found")
 
     def test_list_accounts(self):
         """It should List all Accounts"""
