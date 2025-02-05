@@ -13,7 +13,9 @@ if not DATABASE_URI:
     DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD", "postgres")
     DATABASE_NAME = os.getenv("DATABASE_NAME", "postgres")
     DATABASE_HOST = os.getenv("DATABASE_HOST", "localhost")
-    DATABASE_URI = f"postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:5432/{DATABASE_NAME}"
+    db_credentials = f"{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}"
+    db_port = "5432"
+    DATABASE_URI = f"postgresql://{db_credentials}:{db_port}/{DATABASE_NAME}"
 
 # Configure SQLAlchemy
 SQLALCHEMY_DATABASE_URI = DATABASE_URI
