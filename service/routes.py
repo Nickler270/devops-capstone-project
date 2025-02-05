@@ -66,13 +66,10 @@ def create_accounts():
 ######################################################################
 @app.route("/accounts", methods=["GET"])
 def list_accounts():
-    """List all Accounts"""
-    accounts = Account.query.all()  # Get all accounts from the DB
-    if not accounts:
-        return jsonify({"message": "No accounts found"}),
-        status.HTTP_404_NOT_FOUND
-    return jsonify([account.serialize() for account in accounts]),
-    status.HTTP_200_OK
+    """List all accounts"""
+    accounts = Account.all()
+    account_list = [account.serialize() for account in accounts]
+    return jsonify(account_list), 200
 
 
 ######################################################################
@@ -115,22 +112,21 @@ def update_account(id):
 ######################################################################
 # DELETE AN ACCOUNT
 ######################################################################
-@app.route('/accounts/<int:id>', methods=['DELETE'])
-def delete_account(id):
-    """Delete an Account"""
-    account = Account.query.get(id)
+@app.route("/accounts/<int:account_id>", methods=["DELETE"])
+def delete_account(account_id):
+    """Delete an account by ID"""
+    account = Account.find(account_id)
     if not account:
-        return jsonify({"error": "Account not found"}),
-        status.HTTP_404_NOT_FOUND
+        return jsonify({"error": "Account not found"}), 404
 
-    account.delete()  # Delete the account from the DB
-    return jsonify({"message": "Account deleted successfully"}),
-    status.HTTP_200_OK
+    account.delete()
+    return jsonify({"message": "Account deleted successfully"}), 200
 
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
+
 def check_content_type(media_type):
     """Checks that the media type is correct"""
     content_type = request.headers.get("Content-Type")

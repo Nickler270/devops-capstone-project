@@ -158,6 +158,7 @@ class TestAccountService(TestCase):
         account = self._create_account()
         resp = self.client.delete(f"/accounts/{account['id']}")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
         data = resp.get_json()
         self.assertEqual(data["message"], "Account deleted successfully")
 
