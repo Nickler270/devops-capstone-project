@@ -136,7 +136,10 @@ class TestAccountService(TestCase):
 
     def test_update_account(self):
         """It should Update an Account"""
-        account = self._create_account()  # Creates a new account
+        # Create a new account first
+        account = self._create_account()
+
+        # New data to update the account
         updated_data = {
             "name": "John Updated",
             "email": "john.updated@example.com",
@@ -145,26 +148,28 @@ class TestAccountService(TestCase):
             "date_joined": "2025-02-01"  # Correct format for the date
         }
 
+        # Send a PUT request to update the account
         resp = self.client.put(
             f"/accounts/{account['id']}",
             json=updated_data,
             content_type="application/json"
         )
 
-        print(resp.data)  # Debugging step: Inspect the response data
+        print(resp.data)  # Debugging: Inspect the response data
 
         # Ensure the response status is OK
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
+        # Get the response data as JSON
         data = resp.get_json()
-        print(data)  # Debugging step: Check the returned data
+        print(data)  # Debugging: Check the returned data
 
-        # Ensure the updated data matches the response
-        self.assertEqual(data["name"], updated_data["name"])
-        self.assertEqual(data["email"], updated_data["email"])
-        self.assertEqual(data["address"], updated_data["address"])
-        self.assertEqual(data["phone_number"], updated_data["phone_number"])
-        self.assertEqual(data["date_joined"], updated_data["date_joined"])
+        # Ensure the updated fields are correct in the response
+        self.assertEqual(data['name'], updated_data['name'])
+        self.assertEqual(data['email'], updated_data['email'])
+        self.assertEqual(data['address'], updated_data['address'])
+        self.assertEqual(data['phone_number'], updated_data['phone_number'])
+        self.assertEqual(data['date_joined'], updated_data['date_joined'])
 
     def test_delete_account(self):
         """It should Delete an Accountttttttttttttttttttttttt"""
