@@ -94,7 +94,7 @@ def update_account(id):
     """Update an Account"""
     account = Account.query.get(id)
     if not account:
-        return jsonify({"error": "Account not found"}), 404
+        return jsonify({"error": "Account not found"}), status.HTTP_404_NOT_FOUND  # Fix return
 
     # Deserialize the incoming request data
     data = request.get_json()
