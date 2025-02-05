@@ -69,15 +69,19 @@ def list_accounts():
     """List all Accounts"""
     accounts = Account.query.all()  # Get all accounts from the DB
     if not accounts:
-        return jsonify({"message": "No accounts found"}),
-        status.HTTP_404_NOT_FOUND
-    return jsonify([account.serialize() for account in accounts]),
-    status.HTTP_200_OK
+        return jsonify({"message": "No accounts found"}), (
+            status.HTTP_404_NOT_FOUND
+        )
+    return (
+        jsonify([account.serialize() for account in accounts]),
+        status.HTTP_200_OK
+    )
 
 
 ######################################################################
 # READ AN ACCOUNT
 ######################################################################
+
 @app.route('/accounts/<int:id>', methods=['GET'])
 def get_account(id):
     """Fetch an account by ID"""
@@ -120,17 +124,20 @@ def delete_account(id):
     """Delete an Account"""
     account = Account.query.get(id)
     if not account:
-        return jsonify({"error": "Account not found"}),
-        status.HTTP_404_NOT_FOUND
+        return jsonify({"error": "Account not found"}), (
+            status.HTTP_404_NOT_FOUND
+        )
 
     account.delete()  # Delete the account from the DB
-    return jsonify({"message": "Account deleted successfully"}),
-    status.HTTP_200_OK
+    return jsonify({"message": "Account deleted successfully"}), (
+        status.HTTP_200_OK
+    )
 
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
+
 def check_content_type(media_type):
     """Checks that the media type is correct"""
     content_type = request.headers.get("Content-Type")
