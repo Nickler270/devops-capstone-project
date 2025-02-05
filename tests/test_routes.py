@@ -177,7 +177,7 @@ class TestAccountService(TestCase):
 
         resp = self.client.get(f"/accounts/{account['id']}")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
-        
+
     def test_list_accounts(self):
         """It should List all Accounts"""
         self._create_accounts(3)
